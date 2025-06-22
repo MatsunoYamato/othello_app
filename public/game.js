@@ -1,5 +1,8 @@
+// プレイヤーの設定（仮）
+let currentPlayer = 1;
+
 // 初期盤面の状態
-let board = Array.from({length: 8}, () => Array(8).fill(0));
+let board = Array.from({ length: 8 }, () => Array(8).fill(0));
 
 // 盤面を描画する関数
 function renderBoard() {
@@ -12,14 +15,15 @@ function renderBoard() {
       const cell = document.createElement("td");
 
       // 石の表示
-      if (board[y][x] === 1) {
-        cell.className = "black";
-      } else if (board[y][x] === 2) {
-        cell.className = "white";
+      if (board[y][x] !== 0) {
+        const stone = document.createElement("div");
+        stone.classList.add("stone");
+        stone.classList.add(board[y][x] === 1 ? "black" : "white");
+        cell.appendChild(stone);
       }
 
       // クリックイベント
-      cell.addEventListener("click", function() {
+      cell.addEventListener("click", function () {
         placeStone(x, y);
       });
 
@@ -44,10 +48,10 @@ function placeStone(x, y) {
   renderBoard();
 
   // プレイヤー交代
-  currentPlayer = (currentPlayer === 1) ? 2 : 1;
+  currentPlayer = currentPlayer === 1 ? 2 : 1;
 }
 
 // ページ読み込み時に盤面描画
-window.onload = function() {
+window.onload = function () {
   renderBoard();
 };
