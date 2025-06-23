@@ -44,6 +44,8 @@ function placeStone(x, y) {
   // 現在のプレイヤーの石を置く
   board[y][x] = currentPlayer;
 
+  flipStones(x, y);
+
   // 盤面を更新（再描画）
   renderBoard();
 
@@ -53,5 +55,65 @@ function placeStone(x, y) {
 
 // ページ読み込み時に盤面描画
 window.onload = function () {
+  board[3][3] = 2;
+  board[3][4] = 1;
+  board[4][3] = 1;
+  board[4][4] = 2;
+
   renderBoard();
 };
+
+//裏返しの処理
+function flipStones(x, y) {
+  const opponent = currentPlayer === 1 ? 2 : 1; // 相手の石
+
+  const directions = [
+    [-1, -1],
+    [-1, 0],
+    [-1, +1],
+    [0, -1],
+    [0, +1],
+    [+1, -1],
+    [+1, 0],
+    [+1, +1],
+  ];
+
+  // ここで8方向を順番に確認していく
+  for (let i = 0; i < directions.length; i++) {
+    const dirX = directions[i][0];
+    const dirY = directions[i][1];
+
+    // ここに1方向ずつ裏返し処理を書く
+    let nx = x + dirX;
+    let ny = y + dirY;
+
+    const stonesToFlip = [];
+
+    while (
+      0 <= nx &&
+      nx < 8 &&
+      0 <= ny &&
+      ny < 8 &&
+      board[ny][nx] === opponent
+    ) {
+      stonesToFlip.push([nx, ny]);
+      nx += dirX;
+      ny += dirY;
+    }
+
+    // 先に進んで、自分の石があれば裏返し
+    if (
+      0 <= nx &&
+      nx < 8 &&
+      0 <= ny &&
+      ny < 8 &&
+      board[ny][nx] === currentPlayer
+    ) {
+      for (let j = 0; j < stonesToFlip.length; j++) {
+        const flipX = stonesToFlip[j][0];
+        const flipY = stonesToFlip[j][1];
+        board[flipY][flipX] = currentPlayer;
+      }
+    }
+  }
+}
