@@ -35,8 +35,8 @@ function renderBoard() {
 
 // 石を置く処理（仮）
 function placeStone(x, y) {
-  // そのマスが空いてるか確認
-  if (board[y][x] !== 0) {
+  // その場所におけるか判断
+  if (!canPlaceStone(x, y)) {
     alert("そこには置けません！");
     return;
   }
@@ -116,4 +116,44 @@ function flipStones(x, y) {
       }
     }
   }
+}
+
+function canPlaceStone(x, y) {
+  if (board[y][x] !== 0) {
+    return false;  // 既に石がある
+  }
+
+  const opponent = currentPlayer === 1 ? 2 : 1;
+  const directions = [
+    [-1, -1], [-1, 0], [-1, +1],
+    [0, -1],          [0, +1],
+    [+1, -1], [+1, 0], [+1, +1],
+  ];
+
+  for (let i = 0; i < directions.length; i++) {
+    let nx = x + directions[i][0];
+    let ny = y + directions[i][1];
+    let foundOpponent = false;
+
+    while (
+      0 <= nx && nx < 8 &&
+      0 <= ny && ny < 8 &&
+      board[ny][nx] === opponent
+    ) {
+      foundOpponent = true;
+      nx += directions[i][0];
+      ny += directions[i][1];
+    }
+
+    if (
+      foundOpponent &&
+      0 <= nx && nx < 8 &&
+      0 <= ny && ny < 8 &&
+      board[ny][nx] === currentPlayer
+    ) {
+      return true;  // この方向で挟めるなら置ける
+    }
+  }
+
+  return false; // どの方向でも挟めなければ置けない
 }
