@@ -36,7 +36,7 @@ function renderBoard() {
 // 石を置く処理（仮）
 function placeStone(x, y) {
   // その場所におけるか判断
-  if (!canPlaceStone(x, y)) {
+  if (!canPlaceStone(x, y, currentPlayer)) {
     alert("そこには置けません！");
     return;
   }
@@ -51,6 +51,18 @@ function placeStone(x, y) {
 
   // プレイヤー交代
   currentPlayer = currentPlayer === 1 ? 2 : 1;
+
+  if (!hasValidMove(currentPlayer)) {
+    alert("置ける場所がないのでパスします");
+    currentPlayer = currentPlayer === 1 ? 2 : 1;
+
+    // もし両方置けないならゲーム終了
+    if (!hasValidMove(currentPlayer)) {
+      alert("ゲーム終了！！")
+      // ここに勝敗判定を
+    }
+  }
+
 }
 
 // ページ読み込み時に盤面描画
@@ -118,12 +130,12 @@ function flipStones(x, y) {
   }
 }
 
-function canPlaceStone(x, y) {
+function canPlaceStone(x, y, player) {
   if (board[y][x] !== 0) {
     return false;  // 既に石がある
   }
 
-  const opponent = currentPlayer === 1 ? 2 : 1;
+  const opponent = player === 1 ? 2 : 1;
   const directions = [
     [-1, -1], [-1, 0], [-1, +1],
     [0, -1],          [0, +1],
@@ -149,7 +161,7 @@ function canPlaceStone(x, y) {
       foundOpponent &&
       0 <= nx && nx < 8 &&
       0 <= ny && ny < 8 &&
-      board[ny][nx] === currentPlayer
+      board[ny][nx] === player
     ) {
       return true;  // この方向で挟めるなら置ける
     }
@@ -157,3 +169,15 @@ function canPlaceStone(x, y) {
 
   return false; // どの方向でも挟めなければ置けない
 }
+
+function hasValidMove(player) {
+  for (let y = 0; y < 8; y++) {
+    for (let x = 0; x < 8; x++) {
+      if (canPlaceStone(x, y, player)) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
