@@ -1,4 +1,4 @@
-// プレイヤーの設定（仮）
+// プレイヤーの設定（1:黒, 2:白）
 let currentPlayer = 1;
 
 // 初期盤面の状態
@@ -7,7 +7,7 @@ let board = Array.from({ length: 8 }, () => Array(8).fill(0));
 // 盤面を描画する関数
 function renderBoard() {
   const table = document.getElementById("board");
-  table.innerHTML = ""; // まず盤面を空にする
+  table.innerHTML = "";
 
   for (let y = 0; y < 8; y++) {
     const row = document.createElement("tr");
@@ -22,6 +22,11 @@ function renderBoard() {
         cell.appendChild(stone);
       }
 
+      // 置ける場所のハイライト
+      if (canPlaceStone(x, y, currentPlayer)) {
+        cell.classList.add("hint");
+      }
+
       // クリックイベント
       cell.addEventListener("click", function () {
         placeStone(x, y);
@@ -31,41 +36,150 @@ function renderBoard() {
     }
     table.appendChild(row);
   }
+
+  // 現在の手番表示
+  const turnText = currentPlayer === 1 ? "黒" : "白";
+  document.getElementById("current-turn").textContent = `現在の手番: ${turnText}`;
 }
 
-// 石を置く処理（仮）
+// 石を置く処理
 function placeStone(x, y) {
-  // その場所におけるか判断
   if (!canPlaceStone(x, y, currentPlayer)) {
     alert("そこには置けません！");
     return;
   }
 
-  // 現在のプレイヤーの石を置く
   board[y][x] = currentPlayer;
-
   flipStones(x, y);
 
-  // 盤面を更新（再描画）
-  renderBoard();
+  // 勝敗判定
+  if (!hasValidMove(1) && !hasValidMove(2)) {
+    renderBoard();
+    checkGameOver();
+    return;
+  }
 
   // プレイヤー交代
   currentPlayer = currentPlayer === 1 ? 2 : 1;
+  renderBoard();
+}
 
-  if (!hasValidMove(currentPlayer)) {
-    alert("置ける場所がないのでパスします");
-    currentPlayer = currentPlayer === 1 ? 2 : 1;
+// 裏返し処理
+function flipStones(x, y) {
+  const opponent = currentPlayer === 1 ? 2 : 1;
+  const directions = [
+    [-1, -1], [-1, 0], [-1, +1],
+    [0, -1],           [0, +1],
+    [+1, -1], [+1, 0], [+1, +1],
+  ];
 
-    // もし両方置けないならゲーム終了
-    if (!hasValidMove(currentPlayer)) {
-      alert("ゲーム終了！！")
-      // ここに勝敗判定を
+  for (let [dx, dy] of directions) {
+    let nx = x + dx;
+    let ny = y + dy;
+    const stonesToFlip = [];
+
+    while (0 <= nx && nx < 8 && 0 <= ny && ny < 8 && board[ny][nx] === opponent) {
+      stonesToFlip.push([nx, ny]);
+      nx += dx;
+      ny += dy;
+    }
+
+    if (0 <= nx && nx < 8 && 0 <= ny && ny < 8 && board[ny][nx] === currentPlayer) {
+      for (let [fx, fy] of stonesToFlip) {
+        board[fy][fx] = currentPlayer;
+      }
     }
   }
+}
+
+// 石が置けるか判定
+function canPlaceStone(x, y, player) {
+  if (board[y][x] !== 0) return false;
+
+  const opponent = player === 1 ? 2 : 1;
+  const directions = [
+    [-1, -1], [-1, 0], [-1, +1],
+    [0, -1],           [0, +1],
+    [+1, -1], [+1, 0], [+1, +1],
+  ];
+
+  for (let [dx, dy] of directions) {
+    let nx = x + dx;
+    let ny = y + dy;
+    let foundOpponent = false;
+
+    while (0 <= nx && nx < 8 && 0 <= ny && ny < 8 && board[ny][nx] === opponent) {
+      foundOpponent = true;
+      nx += dx;
+      ny += dy;
+    }
+
+    if (foundOpponent && 0 <= nx && nx < 8 && 0 <= ny && ny < 8 && board[ny][nx] === player) {
+      return true;
+    }
+  }
+  return false;
+}
+
+// そのプレイヤーに有効手があるか判定
+function hasValidMove(player) {
+  for (let y = 0; y < 8; y++) {
+    for (let x = 0; x < 8; x++) {
+      if (canPlaceStone(x, y, player)) return true;
+    }
+  }
+  return false;
+}
+
+// 勝敗判定と表示
+function checkGameOver() {
+  const counts = countStones();
+  let message = `黒: ${counts.black} 石、白: ${counts.white} 石\n`;
+
+  if (counts.black > counts.white) {
+    message += "黒の勝ち！";
+  } else if (counts.white > counts.black) {
+    message += "白の勝ち！";
+  } else {
+    message += "引き分け！";
+  }
+
+  document.getElementById("result-message").textContent = message;
+  document.getElementById("result-modal").classList.remove("hidden");
 
 }
 
-// ページ読み込み時に盤面描画
+// 石の数を数える
+function countStones() {
+  let black = 0, white = 0;
+  for (let row of board) {
+    for (let cell of row) {
+      if (cell === 1) black++;
+      if (cell === 2) white++;
+    }
+  }
+  return { black, white };
+}
+
+// パスボタンの処理
+document.getElementById("pass-button").addEventListener("click", () => {
+  if (hasValidMove(currentPlayer)) {
+    alert("まだ置ける場所があります！");
+    return;
+  }
+
+  const passPlayer = currentPlayer === 1 ? "黒" : "白";
+  alert(`${passPlayer}はパスします`);
+
+  currentPlayer = currentPlayer === 1 ? 2 : 1;
+  renderBoard();
+
+  if (!hasValidMove(1) && !hasValidMove(2)) {
+    setTimeout(() => checkGameOver(), 100);
+  }
+});
+
+// 初期盤面セットと描画
 window.onload = function () {
   board[3][3] = 2;
   board[3][4] = 1;
@@ -75,109 +189,6 @@ window.onload = function () {
   renderBoard();
 };
 
-//裏返しの処理
-function flipStones(x, y) {
-  const opponent = currentPlayer === 1 ? 2 : 1; // 相手の石
-
-  const directions = [
-    [-1, -1],
-    [-1, 0],
-    [-1, +1],
-    [0, -1],
-    [0, +1],
-    [+1, -1],
-    [+1, 0],
-    [+1, +1],
-  ];
-
-  // ここで8方向を順番に確認していく
-  for (let i = 0; i < directions.length; i++) {
-    const dirX = directions[i][0];
-    const dirY = directions[i][1];
-
-    // ここに1方向ずつ裏返し処理を書く
-    let nx = x + dirX;
-    let ny = y + dirY;
-
-    const stonesToFlip = [];
-
-    while (
-      0 <= nx &&
-      nx < 8 &&
-      0 <= ny &&
-      ny < 8 &&
-      board[ny][nx] === opponent
-    ) {
-      stonesToFlip.push([nx, ny]);
-      nx += dirX;
-      ny += dirY;
-    }
-
-    // 先に進んで、自分の石があれば裏返し
-    if (
-      0 <= nx &&
-      nx < 8 &&
-      0 <= ny &&
-      ny < 8 &&
-      board[ny][nx] === currentPlayer
-    ) {
-      for (let j = 0; j < stonesToFlip.length; j++) {
-        const flipX = stonesToFlip[j][0];
-        const flipY = stonesToFlip[j][1];
-        board[flipY][flipX] = currentPlayer;
-      }
-    }
-  }
-}
-
-function canPlaceStone(x, y, player) {
-  if (board[y][x] !== 0) {
-    return false;  // 既に石がある
-  }
-
-  const opponent = player === 1 ? 2 : 1;
-  const directions = [
-    [-1, -1], [-1, 0], [-1, +1],
-    [0, -1],          [0, +1],
-    [+1, -1], [+1, 0], [+1, +1],
-  ];
-
-  for (let i = 0; i < directions.length; i++) {
-    let nx = x + directions[i][0];
-    let ny = y + directions[i][1];
-    let foundOpponent = false;
-
-    while (
-      0 <= nx && nx < 8 &&
-      0 <= ny && ny < 8 &&
-      board[ny][nx] === opponent
-    ) {
-      foundOpponent = true;
-      nx += directions[i][0];
-      ny += directions[i][1];
-    }
-
-    if (
-      foundOpponent &&
-      0 <= nx && nx < 8 &&
-      0 <= ny && ny < 8 &&
-      board[ny][nx] === player
-    ) {
-      return true;  // この方向で挟めるなら置ける
-    }
-  }
-
-  return false; // どの方向でも挟めなければ置けない
-}
-
-function hasValidMove(player) {
-  for (let y = 0; y < 8; y++) {
-    for (let x = 0; x < 8; x++) {
-      if (canPlaceStone(x, y, player)) {
-        return true;
-      }
-    }
-  }
-  return false;
-}
-
+document.getElementById("close-modal").addEventListener("click", () => {
+  document.getElementById("result-modal").classList.add("hidden");
+});
