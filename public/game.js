@@ -37,9 +37,14 @@ function renderBoard() {
     table.appendChild(row);
   }
 
+  const turnText = currentPlayer === 1 ? "Black Turn" : "White Turn";
+  const turnDiv = document.getElementById("current-turn");
+  turnDiv.textContent = turnText;
+  turnDiv.className = `turn-indicator ${currentPlayer === 1 ? "black" : "white"}`;
+  
   // 現在の手番表示
-  const turnText = currentPlayer === 1 ? "黒" : "白";
-  document.getElementById("current-turn").textContent = `現在の手番: ${turnText}`;
+  // const turnText = currentPlayer === 1 ? "黒" : "白";
+  // document.getElementById("current-turn").textContent = `現在の手番: ${turnText}`;
 }
 
 // 石を置く処理
@@ -68,9 +73,14 @@ function placeStone(x, y) {
 function flipStones(x, y) {
   const opponent = currentPlayer === 1 ? 2 : 1;
   const directions = [
-    [-1, -1], [-1, 0], [-1, +1],
-    [0, -1],           [0, +1],
-    [+1, -1], [+1, 0], [+1, +1],
+    [-1, -1],
+    [-1, 0],
+    [-1, +1],
+    [0, -1],
+    [0, +1],
+    [+1, -1],
+    [+1, 0],
+    [+1, +1],
   ];
 
   for (let [dx, dy] of directions) {
@@ -78,13 +88,25 @@ function flipStones(x, y) {
     let ny = y + dy;
     const stonesToFlip = [];
 
-    while (0 <= nx && nx < 8 && 0 <= ny && ny < 8 && board[ny][nx] === opponent) {
+    while (
+      0 <= nx &&
+      nx < 8 &&
+      0 <= ny &&
+      ny < 8 &&
+      board[ny][nx] === opponent
+    ) {
       stonesToFlip.push([nx, ny]);
       nx += dx;
       ny += dy;
     }
 
-    if (0 <= nx && nx < 8 && 0 <= ny && ny < 8 && board[ny][nx] === currentPlayer) {
+    if (
+      0 <= nx &&
+      nx < 8 &&
+      0 <= ny &&
+      ny < 8 &&
+      board[ny][nx] === currentPlayer
+    ) {
       for (let [fx, fy] of stonesToFlip) {
         board[fy][fx] = currentPlayer;
       }
@@ -98,9 +120,14 @@ function canPlaceStone(x, y, player) {
 
   const opponent = player === 1 ? 2 : 1;
   const directions = [
-    [-1, -1], [-1, 0], [-1, +1],
-    [0, -1],           [0, +1],
-    [+1, -1], [+1, 0], [+1, +1],
+    [-1, -1],
+    [-1, 0],
+    [-1, +1],
+    [0, -1],
+    [0, +1],
+    [+1, -1],
+    [+1, 0],
+    [+1, +1],
   ];
 
   for (let [dx, dy] of directions) {
@@ -108,13 +135,26 @@ function canPlaceStone(x, y, player) {
     let ny = y + dy;
     let foundOpponent = false;
 
-    while (0 <= nx && nx < 8 && 0 <= ny && ny < 8 && board[ny][nx] === opponent) {
+    while (
+      0 <= nx &&
+      nx < 8 &&
+      0 <= ny &&
+      ny < 8 &&
+      board[ny][nx] === opponent
+    ) {
       foundOpponent = true;
       nx += dx;
       ny += dy;
     }
 
-    if (foundOpponent && 0 <= nx && nx < 8 && 0 <= ny && ny < 8 && board[ny][nx] === player) {
+    if (
+      foundOpponent &&
+      0 <= nx &&
+      nx < 8 &&
+      0 <= ny &&
+      ny < 8 &&
+      board[ny][nx] === player
+    ) {
       return true;
     }
   }
@@ -146,12 +186,12 @@ function checkGameOver() {
 
   document.getElementById("result-message").textContent = message;
   document.getElementById("result-modal").classList.remove("hidden");
-
 }
 
 // 石の数を数える
 function countStones() {
-  let black = 0, white = 0;
+  let black = 0,
+    white = 0;
   for (let row of board) {
     for (let cell of row) {
       if (cell === 1) black++;

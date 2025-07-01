@@ -1,20 +1,20 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>オセロ</title>
+    <title>Othello</title>
     <meta charset="UTF-8" />
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
     <div class="othello-container">
-      <h1>オセロ</h1>
-      <h2 id="current-turn"></h2>
+      <h1>Othello</h1>
+      <div id="current-turn" class="turn-indicator"></div>
       <table id="board"></table>
-      <button id="pass-button">パスする</button>
+      <button id="pass-button">Pass</button>
       <div id="result-modal" class="modal hidden">
         <div class="modal-content">
           <p id="result-message"></p>
-          <button id="close-modal">閉じる</button>
+          <button id="close-modal">Close</button>
         </div>
       </div>
       <script src="game.js"></script>
