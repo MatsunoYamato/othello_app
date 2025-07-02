@@ -1,24 +1,81 @@
 # README
+# 🕹️ Othello — モダンでシックなオセロアプリ
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+ダークグレー系シックなデザインとアニメーション演出を備えた、軽量でシンプルなブラウザ版オセロゲーム。  
+ポートフォリオ用に制作しました。
 
-Things you may want to cover:
+---
 
-* Ruby version
+## 📸 デモ画像
 
-* System dependencies
+https://github.com/user-attachments/assets/44fe8045-8e76-47b0-b89f-d7b3a5c55e72
 
-* Configuration
+---
 
-* Database creation
+## 🎮 主な機能
 
-* Database initialization
+- 2人対戦のオセロ
+- 現在の手番表示（色分け）
+- 置ける場所のハイライト表示
+- パスボタンによる手動パス機能
+- ゲーム終了時の戦績モーダル表示
+- 石配置時のアニメーション効果
 
-* How to run the test suite
+---
 
-* Services (job queues, cache servers, search engines, etc.)
+## 🎨 デザインテーマ
 
-* Deployment instructions
+- **盤面**：ダークグレー基調、黒石も見やすいやや明るめボード
+- **手番表示**：Black / White 表記で手番ごとに背景カラーが変化
+- **ボタン・モーダル**：グラデーション＆柔らかい角丸デザイン
 
-* ...
+---
+
+## 🖥️ 使用技術
+
+- HTML
+- CSS（アニメーション・レスポンシブ）
+- JavaScript（DOM操作・イベント制御）
+
+---
+
+## 📦 ファイル構成
+
+📦 othello-app
+├── index.html
+├── style.css
+├── game.js
+└── README.md
+
+
+---
+
+## 🚀 実行方法
+
+https://matsunoyamato.github.io/othello_app/  にアクセス
+
+---
+
+## 🎯 今後のアップデート予定
+
+- AI対戦機能の追加（Easy / Normal / Hard）
+- 戦績データのローカルストレージ保存
+- スマホ対応のレスポンシブUI
+- サウンドエフェクトの実装
+
+---
+
+## 📝 制作の背景
+
+JavaScriptのDOM操作とオセロのロジック設計を学ぶため、オセロアプリをモダンなデザインで一から実装しました。  
+ポートフォリオとしても掲載予定。
+
+---
+
+## 📬 お問い合わせ
+
+ご意見・感想・改良提案など大歓迎です！
+[GitHubアカウント名](https://github.com/MatsunoYamato) までお気軽にどうぞ。
+
+---
+
